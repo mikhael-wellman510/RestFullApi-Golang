@@ -1,0 +1,7 @@
+restfull Api
+
+
+Install
+PostgreSql : go get github.com/lib/pq
+HTTP Router : https://github.com/julienschmidt/httprouter 
+Validation : https://github.com/go-playground/validator 
