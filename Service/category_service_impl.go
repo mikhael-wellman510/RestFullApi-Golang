@@ -7,15 +7,29 @@ import (
 	"restfull-api/Model/web"
 	repository "restfull-api/Repository"
 	"restfull-api/helper"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type CategoryServiceImpl struct {
 	// Injeksi Repository
 	CategoryRepository repository.CategoryRepository
 	DB                 *sql.DB
+	// Validator package
+	Validate *validator.Validate
+}
+
+func NewCategoryService(categoryRepository repository.CategoryRepository, DB *sql.DB, validate *validator.Validate) CategoryService {
+	return &CategoryServiceImpl{
+		CategoryRepository: categoryRepository,
+		DB:                 DB,
+		Validate:           validate,
+	}
 }
 
 func (service *CategoryServiceImpl) Create(ctx context.Context, request web.CategoryCreateRequest) web.CategoryResponse {
+	errValidate := service.Validate.Struct(request)
+	helper.PanicIfErr(errValidate)
 	tx, err := service.DB.Begin()
 
 	helper.PanicIfErr(err)
@@ -34,6 +48,8 @@ func (service *CategoryServiceImpl) Create(ctx context.Context, request web.Cate
 }
 
 func (service *CategoryServiceImpl) Update(ctx context.Context, request web.CategoryUpdateRequest) web.CategoryResponse {
+	errValidate := service.Validate.Struct(request)
+	helper.PanicIfErr(errValidate)
 	tx, err := service.DB.Begin()
 	helper.PanicIfErr(err)
 
@@ -84,7 +100,7 @@ func (service *CategoryServiceImpl) FindById(ctx context.Context, categoryId int
 
 }
 
-func (service *CategoryServiceImpl) FindByAll(ctx context.Context) []web.CategoryResponse {
+func (service *CategoryServiceImpl) FindAll(ctx context.Context) []web.CategoryResponse {
 	tx, err := service.DB.Begin()
 
 	helper.PanicIfErr(err)
