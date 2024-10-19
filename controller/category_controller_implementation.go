@@ -28,8 +28,9 @@ func NewCategoryController(categoryService service.CategoryService) CategoryCont
 func (controller *CategoryControllerImpl) Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 
 	categoryCreateRequest := web.CategoryCreateRequest{}
+
 	// Ubah dari Json ke Struct
-	helper.ReadFromRequestBody(request, categoryCreateRequest)
+	helper.ReadFromRequestBody(request, &categoryCreateRequest)
 
 	categoryResponse := controller.CategoryService.Create(request.Context(), categoryCreateRequest)
 
@@ -38,13 +39,15 @@ func (controller *CategoryControllerImpl) Create(writer http.ResponseWriter, req
 		Status: "OK",
 		Data:   categoryResponse,
 	}
+
+	fmt.Println("cek")
 	// Ubah dari Struct ke Json
 	helper.WriteToResponseBody(writer, webResponse)
 
 }
 
 func (controller *CategoryControllerImpl) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	fmt.Println("Cek")
+
 	categoryUpdateRequest := web.CategoryUpdateRequest{}
 
 	helper.ReadFromRequestBody(request, &categoryUpdateRequest)
