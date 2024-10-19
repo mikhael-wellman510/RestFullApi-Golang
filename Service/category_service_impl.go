@@ -6,6 +6,7 @@ import (
 	"restfull-api/Model/domain"
 	"restfull-api/Model/web"
 	repository "restfull-api/Repository"
+	"restfull-api/exception"
 	"restfull-api/helper"
 
 	"github.com/go-playground/validator/v10"
@@ -57,7 +58,10 @@ func (service *CategoryServiceImpl) Update(ctx context.Context, request web.Cate
 
 	// Find Id , ada atau tidak
 	category, err := service.CategoryRepository.FindById(ctx, tx, request.Id)
-	helper.PanicIfErr(err)
+
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	// Kalau ada . assign (Updated)
 	category.Name = request.Name
@@ -78,7 +82,9 @@ func (service *CategoryServiceImpl) Delete(ctx context.Context, categoryId int) 
 	// cari dulu id yang mau di hapus
 	category, err := service.CategoryRepository.FindById(ctx, tx, categoryId)
 
-	helper.PanicIfErr(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 	service.CategoryRepository.Delete(ctx, tx, category)
 
 }
@@ -93,7 +99,9 @@ func (service *CategoryServiceImpl) FindById(ctx context.Context, categoryId int
 	// Find id
 	category, err := service.CategoryRepository.FindById(ctx, tx, categoryId)
 
-	helper.PanicIfErr(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	// Transalate categoryResponse
 	return helper.ToCategoryResponse(category)
